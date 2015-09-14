@@ -2,6 +2,9 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <unistd.h>
 #include "socket.h"
 
 int creer_serveur(int port){
@@ -11,7 +14,7 @@ int creer_serveur(int port){
   const char *message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
   struct sockaddr_in saddr;
   saddr.sin_family = AF_INET; /* Socket ipv4 */
-  saddr.sin_port = htons(8080); /* Port d'écoute */
+  saddr.sin_port = htons(port); /* Port d'écoute */
   saddr.sin_addr.s_addr = INADDR_ANY; /* écoute sur toutes les interfaces */
 
   socket_serveur = socket(AF_INET, SOCK_STREAM, 0);
@@ -36,10 +39,14 @@ int creer_serveur(int port){
     }
   /* Utilisation de la methode */
 
-  if (socket_client = accept(socket_serveur, NULL, NULL) != -1)
+  /* if (socket_client = accept(socket_serveur, NULL, NULL) != -1)*/
+  socket_client = accept(socket_serveur, NULL, NULL);
+  if(socket_client == -1)
     {
-      write(socket_client, message_bienvenue, strlen(message_bienvenue));
+      perror("accept");
     }
+      write(socket_client, message_bienvenue, strlen(message_bienvenue));
   /* Utilisation methode accept et message de bienvenue */
 
+return 1;
 }
