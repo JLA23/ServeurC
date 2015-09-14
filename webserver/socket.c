@@ -10,8 +10,6 @@
 int creer_serveur(int port){
 
   int socket_serveur;
-  int socket_client;
-  const char *message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
   struct sockaddr_in saddr;
   saddr.sin_family = AF_INET; /* Socket ipv4 */
   saddr.sin_port = htons(port); /* Port d'écoute */
@@ -41,13 +39,6 @@ int creer_serveur(int port){
 
   /* if (socket_client = accept(socket_serveur, NULL, NULL) != -1)*/
   
-  while((socket_client = accept(socket_serveur, NULL, NULL)) != -1)
-    {
-      int pid = fork();
-      if(pid == 0){
-	write(socket_client, message_bienvenue, strlen(message_bienvenue));
-      }
-  /* Utilisation methode accept et message de bienvenue */
-    }
-return 1;
+
+  return socket_serveur;
 }
