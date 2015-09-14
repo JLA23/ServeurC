@@ -1,0 +1,7 @@
+Questions Chapitre 3:
+
+1) "bind socker_serveur: Address already in use"
+   L'Adresse est déjà utilisée.
+
+2) Aucune entrée/sortie. Il ne se passe rien donc la connection
+   a été faites.
