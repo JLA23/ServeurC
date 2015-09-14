@@ -40,13 +40,14 @@ int creer_serveur(int port){
   /* Utilisation de la methode */
 
   /* if (socket_client = accept(socket_serveur, NULL, NULL) != -1)*/
-  socket_client = accept(socket_serveur, NULL, NULL);
-  if(socket_client == -1)
+  
+  while((socket_client = accept(socket_serveur, NULL, NULL)) != -1)
     {
-      perror("accept");
-    }
-      write(socket_client, message_bienvenue, strlen(message_bienvenue));
+      int pid = fork();
+      if(pid == 0){
+	write(socket_client, message_bienvenue, strlen(message_bienvenue));
+      }
   /* Utilisation methode accept et message de bienvenue */
-
+    }
 return 1;
 }
