@@ -20,24 +20,24 @@ int main(){
       if(pid == 0){
 	sleep(3);
         if(write(socket_client, message_bienvenue, strlen(message_bienvenue)) == -1)
-         {
-	  perror("Error Write Welcome");
-		/* traitement d’erreur */
-	 }
+	  {
+	    perror("Error Write Welcome");
+	    /* traitement d’erreur */
+	  }
 
 	while((longueur = read(socket_client, temp, 256)) != -1)
-         {
-	  if(write(socket_client, temp, longueur) == -1)
-           {
-	    perror("Error Write Welcome 2");
-	    /* traitement d’erreur */
-	   }
-         }
-  /* Utilisation methode accept et message de bienvenue */
-     }
-    else {
-      close(socket_client);
-     } 
-   }
- return 1;	
+	  {
+	    if(write(socket_client, temp, longueur) == -1)
+	      {
+		perror("Error Write Welcome 2");
+		/* traitement d’erreur */
+	      }
+	  }
+	/* Utilisation methode accept et message de bienvenue */
+      }
+      else {
+	close(socket_client);
+      } 
+    }
+  return 1;	
 }
