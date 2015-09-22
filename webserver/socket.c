@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <unistd.h>
+#include <signal.h>
 #include "socket.h"
 
 int creer_serveur(int port){
@@ -45,8 +46,13 @@ int creer_serveur(int port){
     }
   /* Utilisation de la methode */
 
-  /* if (socket_client = accept(socket_serveur, NULL, NULL) != -1)*/
-  
-
   return socket_serveur;
 }
+
+void initialiser_signaux(){
+  if(signal(SIGPIPE , SIG_IGN) == SIG_ERR)
+    {
+     perror("signal");
+    }
+}
+
