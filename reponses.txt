@@ -1,7 +1,14 @@
 Questions Chapitre 3:
 
-1) "bind socker_serveur: Address already in use"
-   L'Adresse est déjà utilisée.
+1) "bind socker_serveur: Address already in use" :
+   L'Adresse est déjà utilisée. Il ne peut y avoir qu'une seule connection.
 
 2) Aucune entrée/sortie. Il ne se passe rien donc la connection
-   a été faites.
+   a été faite.
+
+3) "Trying ::1... telnet : Connection refused"
+   ::1 correspond à  une adresse de  IPv6 mais notre serveur 
+   ne supporte pas l'IPv6 donc la connection refusée est compréhensible.
+
+4) La connection au serveur s'établie pour plusieurs clients. Car notre
+   serveur gère le multi-utilisateur.
