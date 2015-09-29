@@ -20,6 +20,8 @@ int main(){
     {
       pid = fork();
       if(pid == 0){
+	FILE *fichier;
+	fichier = fdopen(socket_client, "w+");
 	sleep(3);
         if(write(socket_client, message_bienvenue, strlen(message_bienvenue)) == -1)
          {
@@ -35,10 +37,6 @@ int main(){
 	    /* traitement d’erreur */
 	   }
          }
-	if(longueur == -1){
-	 perror("Erreur read retour");
-	}
-	exit(EXIT_SUCCESS);
   /* Utilisation methode accept et message de bienvenue */
      }
     else {
