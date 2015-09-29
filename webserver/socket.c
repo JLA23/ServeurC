@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -16,6 +17,7 @@ int creer_serveur(int port){
   saddr.sin_port = htons(port); /* Port d'écoute */
   saddr.sin_addr.s_addr = INADDR_ANY; /* écoute sur toutes les interfaces */
   int optval = 1;
+  initialiser_signaux();
 
   socket_serveur = socket(AF_INET, SOCK_STREAM, 0);
   if (socket_serveur == -1)
@@ -49,10 +51,18 @@ int creer_serveur(int port){
   return socket_serveur;
 }
 
+void traitement_signal(int sig){
+  printf("Signal %d recu\n", sig);
+  waitpid(-1, &sig, WNOHANG);
+}
+
 void initialiser_signaux(){
-  if(signal(SIGPIPE , SIG_IGN) == SIG_ERR)
-    {
-     perror("signal");
-    }
+  struct sigaction sa;
+  sa.sa_handler = traitement_signal;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = SA_RESTART;
+  if(sigaction(SIGCHLD, &sa, NULL) == -1){
+    perror("sigaction(SIGCHLKD)");
+  }
 }
 

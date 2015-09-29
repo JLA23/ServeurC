@@ -2,9 +2,11 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "socket.h"
 
 int main(){
@@ -25,7 +27,7 @@ int main(){
 		/* traitement d’erreur */
 	 }
 
-	while((longueur = read(socket_client, temp, 256)) != -1)
+	while((longueur = read(socket_client, temp, 256)) != 0)
          {
 	  if(write(socket_client, temp, longueur) == -1)
            {
@@ -33,6 +35,10 @@ int main(){
 	    /* traitement d’erreur */
 	   }
          }
+	if(longueur == -1){
+	 perror("Erreur read retour");
+	}
+	exit(EXIT_SUCCESS);
   /* Utilisation methode accept et message de bienvenue */
      }
     else {
