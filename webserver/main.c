@@ -15,6 +15,7 @@ int main(){
   const char *message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
   /*int longueur = 0;*/
   char temp[256];
+  char *type, *slash, *protocol, *message;
   int pid;
   while((socket_client = accept(socket_serveur, NULL, NULL)) != -1)
     {
@@ -28,16 +29,23 @@ int main(){
 	  perror("Error Write Welcome");
 		/* traitement d’erreur */
 	 }
-	
-	while(fgets(temp, 256, fichier) != NULL){
-	  printf("%s %s", "<Pawnee>", temp);
-	} 
+	if(fgets(temp, 256, fichier) != NULL){
+	  message = strdup(temp);
+	  type = strtok(message, " ");
+	  slash = strtok(NULL, " ");
+	  protocol = strtok(NULL, " ");
+	  if(strcmp(type, "GET") == 0 && strcmp(slash, "/") == 0 && (strncmp(protocol, "HTTP/1.1", 8) == 0 || strncmp(protocol, "HTTP/1.0", 8) == 0)){
+	    while(fgets(temp, 256, fichier) != NULL && (temp[0] != '\n' || temp[0] != '\r')){
+		printf("%s %s", "<Pawnee>", temp);
+	      }
+	    }
+	}
   /* Utilisation methode accept et message de bienvenue */
 	fclose(fichier);
-     }
+      }   
     else {
       close(socket_client);
-     } 
-   }
+     }
+    } 
  return 1;	
 }
