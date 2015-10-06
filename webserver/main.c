@@ -13,7 +13,7 @@ int main(){
   int socket_client;
   int socket_serveur = creer_serveur(8080);
   const char *message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
-  int longueur = 0;
+  /*int longueur = 0;*/
   char temp[256];
   int pid;
   while((socket_client = accept(socket_serveur, NULL, NULL)) != -1)
@@ -28,16 +28,20 @@ int main(){
 	  perror("Error Write Welcome");
 		/* traitement d’erreur */
 	 }
-
-	while((longueur = read(socket_client, temp, 256)) != 0)
+	
+	while(fgets(temp, 256, fichier) != NULL){
+	  fprintf(fichier, "%s %s", "<Pawnee>", temp);
+	} 
+	/*while((longueur = read(socket_client, temp, 256)) != 0)
          {
 	  if(write(socket_client, temp, longueur) == -1)
            {
 	    perror("Error Write Welcome 2");
-	    /* traitement d’erreur */
+	     traitement d’erreur 
 	   }
-         }
+         }*/
   /* Utilisation methode accept et message de bienvenue */
+	fclose(fichier);
      }
     else {
       close(socket_client);
