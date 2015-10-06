@@ -30,16 +30,8 @@ int main(){
 	 }
 	
 	while(fgets(temp, 256, fichier) != NULL){
-	  fprintf(fichier, "%s %s", "<Pawnee>", temp);
+	  printf("%s %s", "<Pawnee>", temp);
 	} 
-	/*while((longueur = read(socket_client, temp, 256)) != 0)
-         {
-	  if(write(socket_client, temp, longueur) == -1)
-           {
-	    perror("Error Write Welcome 2");
-	     traitement d’erreur 
-	   }
-         }*/
   /* Utilisation methode accept et message de bienvenue */
 	fclose(fichier);
      }
