@@ -13,38 +13,47 @@ int main(){
   int socket_client;
   int socket_serveur = creer_serveur(8080);
   const char *message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
-  /*int longueur = 0;*/
+  int longeur = strlen(message_bienvenue);
   char temp[2048];
   char *type, *slash, *protocol, *message;
   int pid;
   FILE * fichier;
-  const char * error404 = "HTTP/1.1 400 Bad Request\nConnection: close \nContent-Length: 17 \n\n400 Bad Request\n";
+  const char * error400 = "HTTP/1.1 400 Bad Request\nConnection: close \nContent-Length: 17 \n\n400 Bad Request\n";
+  const char * ok200 = "HTTP/1.1 200 OK\n";
   while((socket_client = accept(socket_serveur, NULL, NULL)) != -1)
     {
       pid = fork();
-      if(pid == 0){
-        if(write(socket_client, message_bienvenue, strlen(message_bienvenue)) == -1) {
-	  perror("Error Write Welcome");
-	  /* traitement d’erreur */
-	}
+      if(pid == 0){	
 	fichier = fdopen(socket_client, "w+");
-	while(fgets(temp, 2048, fichier) != NULL && (temp[0] != '\n' || temp[0] != '\r')){
+	if(fgets(temp, 2048, fichier) != NULL){
 	  message = strdup(temp);
 	  type = strtok(message, " ");
 	  slash = strtok(NULL, " ");
 	  protocol = strtok(NULL, " ");
 	  if(strcmp(type, "GET") == 0 && (strncmp(protocol, "HTTP/1.1", 8) == 0 || strncmp(protocol, "HTTP/1.0", 8) == 0)){
-	    printf("%s %s %s", type, slash, protocol);
-	    while(fgets(temp, 2048, fichier) != NULL){
+	    printf("%s %s %s\n", type, slash, protocol);
+	    while(fgets(temp, 2048, fichier) != NULL ){
+	      if(temp[0] == '\n' || temp[strlen(temp)-1] != '\n'){
+		break;
+	      }
+	      else if(temp[0] == '\r'){
+		break;
+	      }
+	      else{
 	      fprintf(stderr, "%s" ,temp);
+	      }
 	    }
-	    fprintf(fichier, "sortie");
-	    if(temp[0] == '\n' || temp[0] == '\r'){
-	      fprintf(fichier, "%s", error404);
+ 	    if(temp[strlen(temp)-1] != '\n'){
+	      fprintf(fichier, "%s", error400);
+	    }
+	    else{
+	      fprintf(fichier, message_bienvenue);
+	      fprintf(fichier, ok200);
+	      fprintf(fichier, "Connection: close\nContent-length: %d\n", longeur);
 	    }
 	  }
 	  else{
-	    fprintf(fichier, error404);
+	    fprintf(fichier, error400);
 	  }
 	}
 	
