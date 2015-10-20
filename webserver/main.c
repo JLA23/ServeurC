@@ -19,7 +19,8 @@ int main(){
   int pid;
   FILE * fichier;
   const char * error400 = "HTTP/1.1 400 Bad Request\nConnection: close \nContent-Length: 17 \n\n400 Bad Request\n";
-  const char * ok200 = "HTTP/1.1 200 OK\n";
+  const char * ok200 = "HTTP/1.1 200 OK\nConnection: close\nContent-length: %d\n\n";
+  const char * error404 = "HTTP/1.1 404 Bad Request\nConnection: close \nContent-Length: 17 \n\n404 Bad Request\n";
   while((socket_client = accept(socket_serveur, NULL, NULL)) != -1)
     {
       pid = fork();
@@ -46,10 +47,12 @@ int main(){
  	    if(temp[strlen(temp)-1] != '\n'){
 	      fprintf(fichier, "%s", error400);
 	    }
-	    else{
+	    else if(strcmp(slash, "/") == 0){
+	      fprintf(fichier, ok200, longeur);
 	      fprintf(fichier, message_bienvenue);
-	      fprintf(fichier, ok200);
-	      fprintf(fichier, "Connection: close\nContent-length: %d\n", longeur);
+	    }
+	    else if(strcmp(slash, "/") != 0){
+	      fprintf(fichier, error404);
 	    }
 	  }
 	  else{
