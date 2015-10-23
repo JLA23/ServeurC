@@ -1,1 +1,30 @@
-Nothing yet
+Notice d'utilisation
+
+I) Installation :
+
+- Créer un dossier avec votre terminal et mkdir.
+- Aller dans votre dossier avec la fonction cd <nom du dossier>.
+- Clonez le dépôt git avec la commande "git clone https://github.com/JLA23/ServeurC.git".
+- Allez dans le dossier "ServeurC", puis faire "make". Allez dans le dossier webserver et lancer la commande ./pawnee.
+- Le serveur est lancé sur le port 8080
+
+II) Connexion d'un client au serveur :
+
+- Les commandes "printf "GET / HTTP/1.0\r\n\r\n" | nc 127.0.0.1 8080" et "printf "GET / HTTP/1.1\r\n\r\n" | nc 127.0.0.1 8080" permettent de se connecter au serveur avec la version souhaitée du protocole. Firefox peut aussi se connecter au seveur.
+
+III) Les tags :
+	
+	1- mise_en_place
+	2- serveur_tcp_simple
+	3- REUSEADDR
+	4- SIGPIPE
+	5- fork1	
+	6- SIGCHLD
+	7- fdopen
+	8- simple-get
+	9- url_or_404
+	10- url_or_404_clean
+
+IV) Ce qui ne fonctionne pas
+
+- Le serveur se lance, mais ne transmet pas une page web.

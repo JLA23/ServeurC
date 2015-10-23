@@ -21,4 +21,8 @@
      Host: localhost:8080
      Accept: */*
 
-4) Request http (rfc 2616) 
+4) Request http (rfc 2616)
+
+----------- Questions Chapitre 7.3.2 ------------
+
+2) On ne peut pas accéder à la page index.html, on obtient une erreur "404 : Not found", mais le navigateur reçoit un "GET 200 ok".

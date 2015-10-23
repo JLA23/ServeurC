@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -10,6 +11,7 @@
 #include "socket.h"
 #include <arpa/inet.h>
 #include <stdlib.h>
+#include <fcntl.h>
 
 int creer_serveur(int port){
   
@@ -54,19 +56,34 @@ int creer_serveur(int port){
 }
 
 int parse_http_request(const char *request_line , http_request *request){
-  char* met;
-  char* url;
-  char* http_version;
+  fprintf(stderr, "%s", request_line);
   char* str = strdup(request_line);
-  if((met = strtok (str," ")) == NULL) return 0;
-  if((url = strtok (NULL, " ")) == NULL) return 0;
-  if((http_version = strtok (NULL, " ")) == NULL) return 0;
-  if(strcmp(met,"GET") == 0)
+  char* met = strtok(str," ");
+  char* url = strtok(NULL, " ");
+  char* http_version = strtok(NULL, " ");
+  if(url != NULL){
+    request->url=rewrite_url(url);
+  }
+  if(met == NULL || url == NULL || http_version == NULL){
+    return 0;
+  }
+  if(strcmp(met,"GET") == 0){
     request->method = HTTP_GET;
-  else
+  }
+  else{
     request->method = HTTP_UNSUPPORTED;
-  if ((strcmp(http_version,"HTTP/1.0")==1) && (strcmp(http_version,"HTTP/1.1")==1)) return 0;
-  request->url = url;
+  }
+  if((strncmp(http_version,"HTTP/1.0", 8)==0)){
+    request->major_version=1;
+    request->minor_version=0;
+  }
+  else if(strncmp(http_version,"HTTP/1.1", 8)==0){
+    request->major_version=1;
+    request->minor_version=1;
+  }
+  else{
+    return 0;
+  }
   return 1;
 }
 
@@ -86,6 +103,20 @@ void skip_headers(FILE *client){
   }
 }
 
+char * rewrite_url(char *url){
+  char * res;
+  char * resultat;
+  if((res = strchr(url, '?'))!=NULL){
+    resultat = strtok(url, "?");
+    fprintf(stderr,"%s", resultat);
+    return resultat;
+  }
+  else{
+     fprintf(stderr,"%s", url);
+    return url;
+      }
+}
+
 void send_status(FILE *client , int code , const char *reason_phrase){
 	char status[256];
 	sprintf(status, "HTTP/1.1 %d %s\r\n", code, reason_phrase);
@@ -103,6 +134,47 @@ void send_response(FILE *client , int code , const  char *reason_phrase , const 
 		fprintf(client, "%s", message_body);
 	}
 	fprintf(client, "\r\n");
+}
+
+int check_and_open(const char *url, const char *document_root){
+  char *address;
+  char *file;
+  char temp [1024];
+  int f;
+  address=strdup(url);
+  file=strdup(document_root);
+  strcat(temp,file);
+  strcat(temp,address);
+  f=open(temp,O_RDONLY);
+  if(f==-1){
+    fprintf(stderr,"Error open");
+    return -1;
+  }
+  return f;
+}
+
+int get_file_size(int fd){ 
+  struct stat s;
+  if(fstat(fd,&s)==0){
+    return s.st_size;
+  }
+  return 0;
+  
+}
+
+int copy(int in, int out){
+  char buff [2048];
+  int lecture;
+  lecture=read(in, buff, strlen(buff));
+  if(lecture!=-1){
+    write(out, buff, strlen(buff));
+  }
+  else{
+    fprintf(stderr, "-1");
+    return -1;
+  }
+  fprintf(stderr, "0");
+  return 0;
 }
 
 void traitement_signal(int sig){

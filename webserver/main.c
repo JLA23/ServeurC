@@ -10,12 +10,11 @@
 #include "socket.h"
 
 int main(){
-   const char *message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
   int socket_client;
   int socket_serveur = creer_serveur(8080);
   char temp[2048];
   int pid;
-  int req = 0;
+  int req, fd;
   FILE * fichier;
   http_request requete;
   while((socket_client = accept(socket_serveur, NULL, NULL)) != -1){
@@ -23,24 +22,28 @@ int main(){
     if(pid == 0){	
       fichier = fdopen(socket_client, "w+");
       fgets_or_exit(temp,sizeof(temp),fichier);
-      req = parse_http_request(temp, &requete);
       skip_headers(fichier);
+      req = parse_http_request(temp, &requete);
+      fd = check_and_open(requete.url, "/home/eric/C/S4/pawnee/ServeurC/webserver/");
+      fprintf(stderr, "%d\n", fd);
       if (!req){
 	send_response(fichier, 400, "Bad Request", "400 : Bad Request");
       }
       else if(requete.method == HTTP_UNSUPPORTED){
 	send_response(fichier, 405, "Method Not Allowed", "405 : Method Not Allowed");
       }
-      else if(strcmp(requete.url, "/") == 0){
-	send_response(fichier, 200, "OK", message_bienvenue);
+      else if(fd != -1){
+	fprintf(stderr, "entrer");
+	fprintf(fichier,"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: %du\r\n\r\n",get_file_size(fd));
+	copy(fd,socket_client);
       }
       else{
+	fprintf(stderr, "error");
 	send_response(fichier, 404, "Not Found", "404 : Not Found");
-      }
+	}
       fclose(fichier);			
     }
     
-    /* Utilisation methode accept et message de bienvenue */
     else {
       close(socket_client);
     }
